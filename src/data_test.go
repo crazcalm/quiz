@@ -13,6 +13,53 @@ type testData struct {
 	TimeTaken int
 }
 
+func TestStatsData(t *testing.T) {
+	tests := []struct {
+		file             string
+		len              int
+		times            []string
+		totalConnections []int
+	}{
+		{
+			filepath.Join("test_data", "log.csv"),
+			7,
+			[]string{
+				"2017-10-23 12:05:00 +0000 UTC",
+				"2017-10-23 12:20:03 +0000 UTC",
+				"2017-10-23 12:50:00 +0000 UTC",
+				"2017-10-23 12:00:01 +0000 UTC",
+				"2017-10-23 12:20:05 +0000 UTC",
+				"2017-10-23 12:22:00 +0000 UTC",
+				"2017-10-23 12:00:00 +0000 UTC",
+			},
+			[]int{
+				1, 1, 2, 2, 2, 3, 6,
+			},
+		},
+	}
+
+	for index, test := range tests {
+		data, err := ImportLogsFromCSV(test.file)
+		if err != nil {
+			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
+		}
+		sort.Sort(data)
+
+		//Test starts
+		timestampsData := data.StatsData()
+		if len(timestampsData) != test.len {
+			t.Errorf("Case %d: Expected %d number of entries, but got %d", index, test.len, len(timestampsData))
+		}
+
+		for i, time := range test.times {
+			if !strings.EqualFold(time, timestampsData[i].Timestamp.String()) || test.totalConnections[i] != timestampsData[i].TotalActiveConnections {
+				t.Errorf("Case %d: Expected %s to have %d active connections, but got %s and %d", index, time, test.totalConnections[i], timestampsData[i].Timestamp.String(), timestampsData[i].TotalActiveConnections)
+			}
+		}
+
+	}
+}
+
 func TestActiveConnecions(t *testing.T) {
 	tests := []struct {
 		file      string

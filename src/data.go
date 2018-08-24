@@ -1,6 +1,7 @@
 package quiz
 
 import (
+	"sort"
 	"time"
 )
 
@@ -58,9 +59,9 @@ func (d DataCollection) ActiveConnections(timestamp string) (DataCollection, err
 
 func (d DataCollection) activeConnections(timestamp time.Time) DataCollection {
 	results := []Data{}
-	startIndex := d.findStartIndex(timestamp)
+	//startIndex := d.findStartIndex(timestamp) //  buggy
 
-	for i := startIndex; i > 0; i-- {
+	for i := len(d) - 1; i > 0; i-- {
 		// An EndTime that ends before the input time starts
 		// means that we have left the range of possible active
 		// connections.
@@ -119,4 +120,23 @@ func (d DataCollection) findStartIndex(timestamp time.Time) int {
 		}
 	}
 	return result
+}
+
+// StatsData returns Timestamps, which can be used to compute the basic stats
+// based on the DataCollection.
+func (d DataCollection) StatsData() Timestamps {
+	statsData := Timestamps{}
+	seen := make(map[string]bool) // Used to filter out timestamps that have already been seen.
+	for _, data := range d {
+		_, ok := seen[data.EndTime.String()]
+		if ok {
+			continue
+		}
+		seen[data.EndTime.String()] = true
+		activeConnections := d.activeConnections(data.EndTime)
+		timestampInfo := TimestampInfo{data.EndTime, activeConnections, len(activeConnections)}
+		statsData = append(statsData, timestampInfo)
+	}
+	sort.Sort(statsData)
+	return statsData
 }
