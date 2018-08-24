@@ -7,34 +7,6 @@ import (
 	"time"
 )
 
-func compareTime(x, y time.Time) bool {
-	if x.Year() != y.Year() {
-		return false
-	}
-
-	if x.Month() != y.Month() {
-		return false
-	}
-
-	if x.Day() != y.Day() {
-		return false
-	}
-
-	if x.Hour() != y.Hour() {
-		return false
-	}
-
-	if x.Minute() != y.Minute() {
-		return false
-	}
-
-	if x.Nanosecond() != y.Nanosecond() {
-		return false
-	}
-
-	return true
-}
-
 func TestImportLogsFromCSV(t *testing.T) {
 	nanosecondsToSecond := 1000000000   // Reference https://duckduckgo.com/?q=seconds+to+nano+seconds&t=canonical&ia=answer
 	nanosecondsToMillisecond := 1000000 // Reference https://duckduckgo.com/?q=milliseconds+to+nano+seconds&t=canonical&ia=answer
@@ -77,11 +49,11 @@ func TestImportLogsFromCSV(t *testing.T) {
 			t.Errorf("Case %d: Expected %s but got %s", index, test.IP[index], data[index].IP)
 		}
 
-		if !compareTime(data[index].StartTime, test.startTime[index]) {
+		if !CompareTime(data[index].StartTime, test.startTime[index]) {
 			t.Errorf("Case %d: Expected %v, but got %v", index, test.startTime[index], data[index].StartTime)
 		}
 
-		if !compareTime(data[index].EndTime, test.endTime[index]) {
+		if !CompareTime(data[index].EndTime, test.endTime[index]) {
 			t.Errorf("Case %d: Expected %v, but got %v", index, test.endTime[index], data[index].EndTime)
 		}
 

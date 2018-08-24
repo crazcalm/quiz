@@ -2,7 +2,6 @@ package quiz
 
 import (
 	"path/filepath"
-	"sort"
 	"testing"
 )
 
@@ -20,7 +19,6 @@ func TestTimestampsMin(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		//Test starts
 		timestampsData := data.StatsData()
@@ -45,7 +43,6 @@ func TestTimestampsMax(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		//Test starts
 		timestampsData := data.StatsData()
@@ -70,7 +67,6 @@ func TestTimestampsAverage(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		//Test starts
 		timestampsData := data.StatsData()

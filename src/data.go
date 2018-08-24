@@ -5,6 +5,35 @@ import (
 	"time"
 )
 
+// CompareTime checks to see if two times are equal
+func CompareTime(x, y time.Time) bool {
+	if x.Year() != y.Year() {
+		return false
+	}
+
+	if x.Month() != y.Month() {
+		return false
+	}
+
+	if x.Day() != y.Day() {
+		return false
+	}
+
+	if x.Hour() != y.Hour() {
+		return false
+	}
+
+	if x.Minute() != y.Minute() {
+		return false
+	}
+
+	if x.Nanosecond() != y.Nanosecond() {
+		return false
+	}
+
+	return true
+}
+
 // Data a containter for entries in log data
 type Data struct {
 	IP                 string
@@ -24,7 +53,7 @@ func (d DataCollection) Less(i, j int) bool {
 		return true
 	}
 
-	if compareTime(d[i].StartTime, d[j].StartTime) {
+	if CompareTime(d[i].StartTime, d[j].StartTime) {
 		if d[i].EndTime.Before(d[j].EndTime) {
 			return true
 		}
@@ -58,7 +87,7 @@ func (d DataCollection) ActiveConnections(timestamp string) (DataCollection, err
 }
 
 func (d DataCollection) activeConnections(timestamp time.Time) DataCollection {
-	results := []Data{}
+	results := DataCollection{}
 	//startIndex := d.findStartIndex(timestamp) //  buggy
 
 	for i := len(d) - 1; i > 0; i-- {
@@ -69,7 +98,7 @@ func (d DataCollection) activeConnections(timestamp time.Time) DataCollection {
 			break
 		}
 
-		if d[i].StartTime.Before(timestamp) && compareTime(d[i].EndTime, timestamp) {
+		if d[i].StartTime.Before(timestamp) && CompareTime(d[i].EndTime, timestamp) {
 			results = append(results, d[i])
 			continue // Prvents d[i] from statisfying both if statements and, as a result, be double counted
 		}
@@ -78,6 +107,7 @@ func (d DataCollection) activeConnections(timestamp time.Time) DataCollection {
 			results = append(results, d[i])
 		}
 	}
+	sort.Sort(results)
 	return results
 }
 
@@ -97,7 +127,7 @@ func (d DataCollection) findStartIndex(timestamp time.Time) int {
 
 	for left <= right {
 		middle := (left + right) / 2
-		if compareTime(d[middle].StartTime, timestamp) {
+		if CompareTime(d[middle].StartTime, timestamp) {
 			result = middle
 			break
 		}

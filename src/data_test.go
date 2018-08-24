@@ -2,7 +2,6 @@ package quiz
 
 import (
 	"path/filepath"
-	"sort"
 	"strings"
 	"testing"
 )
@@ -43,7 +42,6 @@ func TestStatsData(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		//Test starts
 		timestampsData := data.StatsData()
@@ -141,14 +139,12 @@ func TestActiveConnecions(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		//Start of test
 		activeConnections, err := data.ActiveConnections(test.inputTime)
 		if err != nil {
 			t.Fail()
 		}
-		sort.Sort(activeConnections)
 
 		if len(activeConnections) != len(test.expected) {
 
@@ -196,7 +192,6 @@ func TestSortDataCollection(t *testing.T) {
 		if err != nil {
 			t.Errorf("Case %d: Unexpected Error: %s", index, err.Error())
 		}
-		sort.Sort(data)
 
 		priorStartTime := data[0].StartTime
 		priorEndTime := data[0].EndTime
@@ -205,7 +200,7 @@ func TestSortDataCollection(t *testing.T) {
 				t.Errorf("Case %d: Not sorted properly. Run go test -v to logs", index)
 				t.Log(i.StartTime, "    ", i.EndTime, "      ", i.OriginalTimeFormat, i.TimeTaken)
 			}
-			if compareTime(priorStartTime, i.StartTime) {
+			if CompareTime(priorStartTime, i.StartTime) {
 				if i.EndTime.Before(priorEndTime) {
 					t.Errorf("Case %d: Not sorted properly. Run go test -v to logs", index)
 					t.Log(i.StartTime, "    ", i.EndTime, "      ", i.OriginalTimeFormat, i.TimeTaken)
