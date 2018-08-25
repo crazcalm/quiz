@@ -35,6 +35,12 @@ func TestStatsData(t *testing.T) {
 				1, 1, 2, 2, 2, 3, 6,
 			},
 		},
+		{
+			filepath.Join("test_data", "empty_log.csv"),
+			0,
+			[]string{},
+			[]int{},
+		},
 	}
 
 	for index, test := range tests {
