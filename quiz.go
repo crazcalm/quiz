@@ -11,6 +11,21 @@ import (
 	"github.com/crazcalm/quiz/src"
 )
 
+const (
+	basicUsage = `
+Basic Usage:
+- quiz file.csv "2018-10-24 12:13:06.000"
+- quiz file.csv "2018-10-24 12:13:06.000, 2018-10-24 12:12:00.000"
+
+Basic Usage with Stats:
+- quiz --stats file.csv
+- quiz --stats file.csv "2018-10-24 12:13:06.000"
+- quiz --stats file.csv "2018-10-24 12:13:06.000, 2018-10-24 12:12:00.000"
+
+Flag(s):
+`
+)
+
 var stats = flag.Bool("stats", false, "Will show the Min, Max and Average number of active connections")
 
 func cleanAndFormatTime(t string) (time.Time, error) {
@@ -53,14 +68,11 @@ func gatherTimes(timestamps []string) (times []time.Time) {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Helllloooo!!!!!\n")
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), basicUsage)
 		flag.PrintDefaults()
 	}
-
 	flag.Parse()
-
-	fmt.Println(os.Args)
 
 	hasEnoughArguementsCheck(*stats)
 
@@ -87,11 +99,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	//Brings csv data into memory
 	dataCollection, err := quiz.ImportLogsFromCSV(file)
 	if err != nil {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s\n", err.Error())
 	}
 
+	// Checks to see if input timestamps were passed in
 	if !strings.EqualFold(inputTimes, "") {
 		timestamps := strings.Split(inputTimes, ",")
 
@@ -101,19 +115,19 @@ func main() {
 		//Case: Only one input time
 		if len(times) == 1 {
 			fmt.Println(len(dataCollection.ActiveConnections(times[0])))
-		} else { // Muiltiple times
+		} else { // Case: Muiltiple input times
 			for _, t := range times {
 				fmt.Printf("%s: %d\n", t.Format(time.StampMilli), len(dataCollection.ActiveConnections(t)))
 			}
 		}
 
-		if *stats {
-			//Print a line space for the stats information
+		if *stats { // Print a line space for the stats information
 			fmt.Println()
 		}
 
 	}
 
+	// Prints the Stats Information
 	if *stats {
 		fmt.Println("Stats")
 		statsData := dataCollection.StatsData()
