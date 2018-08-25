@@ -77,20 +77,11 @@ is after the input time T.
 All of the marked items will consist of all the connections that were in
 progress at input Time T.
 */
-func (d DataCollection) ActiveConnections(timestamp string) (DataCollection, error) {
-	inputTime, err := ParseDate(timestamp)
-	if err != nil {
-		return []Data{}, err
-	}
-
-	return d.activeConnections(inputTime), nil
-}
-
-func (d DataCollection) activeConnections(timestamp time.Time) DataCollection {
+func (d DataCollection) ActiveConnections(timestamp time.Time) DataCollection {
 	results := DataCollection{}
-	//startIndex := d.findStartIndex(timestamp) //  buggy
+	startIndex := d.findStartIndex(timestamp)
 
-	for i := len(d) - 1; i > 0; i-- {
+	for i := startIndex - 1; i > 0; i-- {
 		// An EndTime that ends before the input time starts
 		// means that we have left the range of possible active
 		// connections.
@@ -163,7 +154,7 @@ func (d DataCollection) StatsData() Timestamps {
 			continue
 		}
 		seen[data.EndTime.String()] = true
-		activeConnections := d.activeConnections(data.EndTime)
+		activeConnections := d.ActiveConnections(data.EndTime)
 		timestampInfo := TimestampInfo{data.EndTime, activeConnections, len(activeConnections)}
 		statsData = append(statsData, timestampInfo)
 	}

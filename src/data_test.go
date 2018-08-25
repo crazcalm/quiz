@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 type testData struct {
@@ -67,17 +68,17 @@ func TestStatsData(t *testing.T) {
 func TestActiveConnecions(t *testing.T) {
 	tests := []struct {
 		file      string
-		inputTime string
+		inputTime time.Time
 		expected  []testData
 	}{
 		{
 			filepath.Join("test_data", "log.csv"),
-			"2017-10-23T11:58:00.000",
+			time.Date(2017, time.Month(10), 23, 11, 58, 00, 000, new(time.Location)),
 			[]testData{},
 		},
 		{
 			filepath.Join("test_data", "log.csv"),
-			"2017-10-23T12:00:00.000",
+			time.Date(2017, time.Month(10), 23, 12, 00, 00, 000, new(time.Location)),
 			[]testData{
 
 				testData{
@@ -119,7 +120,7 @@ func TestActiveConnecions(t *testing.T) {
 		},
 		{
 			filepath.Join("test_data", "log.csv"),
-			"2017-10-23T12:22:00.000",
+			time.Date(2017, time.Month(10), 23, 12, 22, 00, 000, new(time.Location)),
 			[]testData{
 				testData{
 					"1.2.3.48",
@@ -147,10 +148,7 @@ func TestActiveConnecions(t *testing.T) {
 		}
 
 		//Start of test
-		activeConnections, err := data.ActiveConnections(test.inputTime)
-		if err != nil {
-			t.Fail()
-		}
+		activeConnections := data.ActiveConnections(test.inputTime)
 
 		if len(activeConnections) != len(test.expected) {
 
